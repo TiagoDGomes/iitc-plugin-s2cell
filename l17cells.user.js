@@ -68,23 +68,37 @@ function wrapper(plugin_info)
 
   window.plugin.showcells.setCellLevel = function()
   {
-    var newCellLevel = prompt("Set a cell level", window.plugin.showcells.storage.cellLevel);
-    newCellLevel = parseInt(newCellLevel, 10);
-    if (window.plugin.showcells.debug)
-    {
-      console.log("new cell=" + newCellLevel);
-    }
-    if (newCellLevel !== isNaN && newCellLevel >= 2 && newCellLevel <= 20)
-    {
-      //alert("Valid cell value");
-      window.plugin.showcells.storage.cellLevel = newCellLevel;
-      window.plugin.showcells.saveStorage();
-      window.plugin.showcells.update();
-    }
-    else
-    {
-      alert("Invalid cell value. Must be a number between 2 and 20");
-    }
+      var select_cell_level = document.createElement('select');
+      select_cell_level.id = 'select_cell_level';
+      select_cell_level.style = "background-color:#0E3C46;color:#ffce00;cursor:pointer;pointer-events:all;";
+      select_cell_level.addEventListener(
+          'change',
+          function() { 
+            window.plugin.showcells.storage.cellLevel = document.getElementById('select_cell_level').value;
+            window.plugin.showcells.saveStorage();
+            window.plugin.showcells.update(); 
+          },
+          false
+      );
+      for (i = 2; i <=20; i++){
+          var opt = document.createElement('option');
+          opt.value = i;
+          opt.style='color:#ffce00;';
+          opt.innerHTML = i;
+          if (i == window.plugin.showcells.storage.cellLevel){
+              opt.setAttribute('selected', true);
+          }
+          select_cell_level.appendChild(opt);
+      }
+      var container = document.createElement('div');
+      container.style = 'text-align:center;margin:0 auto;'
+      container.appendChild(select_cell_level)
+      dialog({
+        html: container,
+        title: 'Set a cell level',
+        id: 'dialog-cell-level',
+        width: 350
+      });
   };
 
   window.plugin.showcells.setup = function()
