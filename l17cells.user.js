@@ -3,10 +3,10 @@
 // @name           IITC plugin: Show S2 Level 17 Cells
 // @author         vib
 // @category       Layer
-// @version        0.1.6
-// @namespace      https://github.com/vibrunazo/l17cells
-// @updateURL      https://raw.githubusercontent.com/vibrunazo/l17cells/master/l17cells.meta.js
-// @downloadURL    https://raw.githubusercontent.com/vibrunazo/l17cells/master/l17cells.user.js
+// @version        0.1.7
+// @namespace      https://github.com/TiagoDGomes/l17cells
+// @updateURL      https://github.com/TiagoDGomes/l17cells/raw/master/l17cells.meta.js
+// @downloadURL    https://github.com/TiagoDGomes/l17cells/raw/master/l17cells.user.js
 // @description    IITC: Shows S2 level 17 cells on the map
 // @include        https://*.ingress.com/intel*
 // @include        http://*.ingress.com/intel*
@@ -18,10 +18,11 @@
 // @match          http://*.ingress.com/mission/*
 // @grant          none
 // ==/UserScript==
-// This plugin is a simple fork of the Regions plugin by Jonatkins
-//
-// original plugin at:
-// https://github.com/jonatkins/ingress-intel-total-conversion
+// Contributors:
+// https://github.com/jonatkins/ingress-intel-total-conversion 
+// https://github.com/vibrunazo/l17cells
+// https://github.com/Dragonsangel/l17cells
+
 function wrapper(plugin_info)
 {
   // ensure plugin framework is there, even if iitc is not yet loaded
@@ -30,7 +31,7 @@ function wrapper(plugin_info)
   //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
   //(leaving them in place might break the 'About IITC' page or break update checks)
   plugin_info.buildName = 'l17cells';
-  plugin_info.dateTimeVersion = '20170110.010106';
+  plugin_info.dateTimeVersion = '20180420.010107';
   plugin_info.pluginId = 'l17cells';
   //END PLUGIN AUTHORS NOTE
 
