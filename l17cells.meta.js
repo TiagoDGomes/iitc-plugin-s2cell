@@ -3,7 +3,7 @@
 // @name           IITC plugin: Show S2 Level 17 Cells
 // @author         vib
 // @category       Layer
-// @version        0.1.7
+// @version        0.1.8
 // @namespace      https://github.com/TiagoDGomes/l17cells
 // @updateURL      https://github.com/TiagoDGomes/l17cells/raw/master/l17cells.meta.js
 // @downloadURL    https://github.com/TiagoDGomes/l17cells/raw/master/l17cells.user.js

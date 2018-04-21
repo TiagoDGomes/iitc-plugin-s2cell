@@ -3,7 +3,7 @@
 // @name           IITC plugin: Show S2 Level 17 Cells
 // @author         vib
 // @category       Layer
-// @version        0.1.7
+// @version        0.1.8
 // @namespace      https://github.com/TiagoDGomes/l17cells
 // @updateURL      https://github.com/TiagoDGomes/l17cells/raw/master/l17cells.meta.js
 // @downloadURL    https://github.com/TiagoDGomes/l17cells/raw/master/l17cells.user.js
@@ -780,18 +780,27 @@ function wrapper(plugin_info)
 
     // name
     var name = window.plugin.showcells.regionName(cell);
-
+    
+    // weight
+    var weight;
+    if (map.getZoom() >= 16){
+      weight = 1;
+    } else {
+      weight = 5
+    }
+    
     var color = cell.level == 6 ? 'gold' : 'orange';
-
+  
     // the level 6 cells have noticible errors with non-geodesic lines - and the larger level 4 cells are worse
     // NOTE: we only draw two of the edges. as we draw all cells on screen, the other two edges will either be drawn
     // from the other cell, or be off screen so we don't care
+
     var region = L.geodesicPolyline([corners[0], corners[1], corners[2]],
     {
       fill: false,
       color: color,
       opacity: 0.5,
-      weight: 5,
+      weight: weight,
       clickable: false
     });
 
