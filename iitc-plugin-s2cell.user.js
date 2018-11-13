@@ -1,9 +1,9 @@
 // ==UserScript==
 // @id             iitc-plugin-s2cell
-// @name           IITC plugin: Show S2 Cells
+// @name           IITC plugin: Show Configurable S2 Cells
 // @author         vib
 // @category       Layer
-// @version        0.2.0
+// @version        0.3.0
 // @namespace      https://github.com/TiagoDGomes/iitc-plugin-s2cell
 // @updateURL      https://github.com/TiagoDGomes/iitc-plugin-s2cell/raw/master/iitc-plugin-s2cell.meta.js
 // @downloadURL    https://github.com/TiagoDGomes/iitc-plugin-s2cell/raw/master/iitc-plugin-s2cell.user.js
@@ -22,7 +22,7 @@
 // https://github.com/jonatkins/ingress-intel-total-conversion 
 // https://github.com/vibrunazo/l17cells
 // https://github.com/Dragonsangel/l17cells
-
+// https://github.com/nikolawannabe/s2-cells
 function wrapper(plugin_info)
 {
   // ensure plugin framework is there, even if iitc is not yet loaded
@@ -30,9 +30,9 @@ function wrapper(plugin_info)
 
   //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
   //(leaving them in place might break the 'About IITC' page or break update checks)
-  plugin_info.buildName = 'iitc-plugin-s2cell';
-  plugin_info.dateTimeVersion = '20180423.063000';
-  plugin_info.pluginId = 'iitc-plugin-s2cell';
+  plugin_info.buildName = 's2-cells';
+  plugin_info.dateTimeVersion = '20180504.121800';
+  plugin_info.pluginId = 's2-cells';
   //END PLUGIN AUTHORS NOTE
 
   // PLUGIN START ////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ function wrapper(plugin_info)
   // SET THIS TO TRUE WHILE DEBUGGING
   window.plugin.showcells.debug = false;
 
-  window.plugin.showcells.storage = { cellLevel: 17 };
+  window.plugin.showcells.storage = { lightCell: 17, darkCell: 14, lightColor: '#f5fffa', darkColor: '#3cb371'};
   window.plugin.showcells.storageKey = 'showcells-storage';
 
   // update the localStorage datas
@@ -59,47 +59,75 @@ function wrapper(plugin_info)
     {
       window.plugin.showcells.storage = JSON.parse(localStorage[window.plugin.showcells.storageKey]);
     }
-
-    //ensure default values are always set
-    if (typeof window.plugin.showcells.storage.cellLevel == "undefined")
-    {
-      window.plugin.showcells.storage.cellLevel = 17;
-    }
   };
 
   window.plugin.showcells.setCellLevel = function()
   {
-      var select_cell_level = document.createElement('select');
-      select_cell_level.id = 'select_cell_level';
-      select_cell_level.style = "background-color:#0E3C46;color:#ffce00;cursor:pointer;pointer-events:all;";
-      select_cell_level.addEventListener(
-          'change',
-          function() { 
-            window.plugin.showcells.storage.cellLevel = document.getElementById('select_cell_level').value;
-            window.plugin.showcells.saveStorage();
-            window.plugin.showcells.update(); 
+    window.plugin.showcells.loadStorage();
+    var lightCell = window.plugin.showcells.storage.lightCell;
+    var darkCell = window.plugin.showcells.storage.darkCell;
+    var lightColor = window.plugin.showcells.storage.lightColor;
+    var darkColor = window.plugin.showcells.storage.darkColor;
+    if (lightCell == isNaN || darkCell == isNaN) {
+        window.plugin.showcells.storage.lightCell = 17;
+        lightCell = 17;
+        window.plugin.showcells.storage.darkCell = 14;
+        darkCell = 14;
+        window.plugin.showcells.saveStorage();
+    } 
+    var dialogHtml = 
+        "<div id='cell-levels-dialog'>" +
+        "Inner Cells<div><input type='text' id='light-cell' value='" + lightCell + "'/> " + 
+          "Color: <input type='color' id='light-color' value='" + lightColor + "'/>" +
+          "</div>" + 
+        "Outer Cells<div><input type='text' id='dark-cell' value='" + darkCell + "'/> " + 
+          "Color: <input type='color' id='dark-color' value='" + darkColor + "'/>" +
+          "</div>" +
+        "<div>Note that if your choices would cause too many cells to be rendered, we will try not to display them.</div>" +
+        "<div>See the <a href='https://github.com/nikolawannabe/s2-cells/blob/master/cell-guidelines.md'>Cell Guidelines</a> " +  
+        "for tips on what these numbers can be used for.</div>"
+  ;
+    var d =
+    dialog({
+        title: "Set Cell Levels",
+        html: dialogHtml,
+        width:'auto',
+        buttons:{
+          'Reset to Defaults': function() {
+                window.plugin.showcells.storage = { lightCell: 17, darkCell: 14, lightColor: '#f5fffa', darkColor: '#3cb371'};
+                window.plugin.showcells.saveStorage();
+                window.plugin.showcells.update();
+                return;
           },
-          false
-      );
-      for (i = 2; i <=20; i++){
-          var opt = document.createElement('option');
-          opt.value = i;
-          opt.style='color:#ffce00;';
-          opt.innerHTML = i;
-          if (i == window.plugin.showcells.storage.cellLevel){
-              opt.setAttribute('selected', true);
-          }
-          select_cell_level.appendChild(opt);
-      }
-      var container = document.createElement('div');
-      container.style = 'text-align:center;margin:0 auto;'
-      container.appendChild(select_cell_level)
-      dialog({
-        html: container,
-        title: 'Set a cell level',
-        id: 'dialog-cell-level',
-        width: 350
-      });
+          'Save': function() {
+                var darkCell = parseInt($("#dark-cell").val(), 10);
+                var lightCell = parseInt($("#light-cell").val(), 10);
+                var darkColor = $("#dark-color").val();
+                var lightColor = $("#light-color").val();
+                console.log("light color: " + lightColor);
+                console.log("dark color: " + darkColor);
+               
+                if (lightCell !== isNaN && darkCell !== isNaN  &&
+                   lightCell >= 2 && lightCell < 21 &&
+                   darkCell >= 2 && darkCell < 21)
+                {
+                    window.plugin.showcells.storage.darkCell = darkCell;
+                    window.plugin.showcells.storage.lightCell = lightCell;
+                    window.plugin.showcells.storage.lightColor = lightColor;
+                    window.plugin.showcells.storage.darkColor = darkColor;
+                  
+                    window.plugin.showcells.saveStorage();
+                    window.plugin.showcells.update();
+                } 
+                else
+                {
+                  alert("Invalid value(s). Cell levels must be numbers between 2 and 20");
+                }
+                return;
+            }
+        }
+    });
+  
   };
 
   window.plugin.showcells.setup = function()
@@ -682,7 +710,7 @@ function wrapper(plugin_info)
     var bounds = map.getBounds();
     var seenCells = {};
 
-    var drawCellAndNeighbors = function(cell)
+    var drawCellAndNeighbors = function(cell, color)
     {
       var cellStr = cell.toString();
 
@@ -698,7 +726,7 @@ function wrapper(plugin_info)
         if (cellBounds.intersects(bounds))
         {
           // on screen - draw it
-          window.plugin.showcells.drawCell(cell);
+          window.plugin.showcells.drawCell(cell, color);
 
           // and recurse to our neighbors
           var neighbors = cell.getNeighbors();
@@ -712,19 +740,52 @@ function wrapper(plugin_info)
 
     // centre cell
     var zoom = map.getZoom();
-    var maxzoom = 16;
-    if (window.plugin.showcells.storage.cellLevel <= 14) maxzoom = 10;
-    if (window.plugin.showcells.storage.cellLevel <= 8) maxzoom = 5;
-    if (zoom >= maxzoom)
-    { // 5 // ;;;;
-      // var cellSize = zoom>=7 ? 6 : 4;  // ;;;;vib
-      var cellSize = window.plugin.showcells.storage.cellLevel;
-      var cell = S2.S2Cell.FromLatLng(map.getCenter(), cellSize);
-
-      drawCellAndNeighbors(cell);
+    
+    var darkCell = window.plugin.showcells.storage.darkCell;
+    var lightCell = window.plugin.showcells.storage.lightCell;
+    var lightColor = window.plugin.showcells.storage.lightColor;
+    var darkColor = window.plugin.showcells.storage.darkColor;
+    var maxzoom = 5;
+    var greaterCell = 0;
+    if (darkCell > lightCell) {
+      greaterCell = darkCell;
+    } else {
+      greaterCell = lightCell;
     }
-
-
+    
+    //FIXME:  This works great with my screen resolution, but may not for others! Needs to be
+    //calculated, but I am too lazy.
+    if (greaterCell > 10 && greaterCell < 11) {
+      maxzoom  = 6;
+    }
+   
+    if (greaterCell > 10 && greaterCell < 13) {
+      maxzoom  = 10;
+    }
+    
+    if (greaterCell > 12 && greaterCell < 16) {
+      maxzoom  = 12;
+    }
+    
+    if (greaterCell > 15 && greaterCell < 18) {
+      maxzoom  = 15;
+    }
+   
+    if (greaterCell > 17 && greaterCell < 20) {
+      maxzoom  = 18;
+      
+    }
+    console.log("Set maxzoom to " + maxzoom +", greater cell is " + greaterCell + " and zoom is " + zoom + ".");
+   
+    if (zoom >= maxzoom)
+    { 
+      var cellStop = S2.S2Cell.FromLatLng(map.getCenter(), lightCell);
+      var cellGym = S2.S2Cell.FromLatLng(map.getCenter(), darkCell);
+      
+      drawCellAndNeighbors(cellStop, lightColor);
+      drawCellAndNeighbors(cellGym, darkColor);
+    }
+    
     // the six cube side boundaries. we cheat by hard-coding the coords as it's simple enough
     var latLngs = [
       [45, -180],
@@ -768,7 +829,7 @@ function wrapper(plugin_info)
     }
   }
 
-  window.plugin.showcells.drawCell = function(cell)
+  window.plugin.showcells.drawCell = function(cell, color)
   {
     //TODO: move to function - then call for all cells on screen
 
@@ -780,27 +841,16 @@ function wrapper(plugin_info)
 
     // name
     var name = window.plugin.showcells.regionName(cell);
-    
-    // weight
-    var weight;
-    if (map.getZoom() >= 16){
-      weight = 1;
-    } else {
-      weight = 5
-    }
-    
-    var color = cell.level == 6 ? 'gold' : 'orange';
-  
+
     // the level 6 cells have noticible errors with non-geodesic lines - and the larger level 4 cells are worse
     // NOTE: we only draw two of the edges. as we draw all cells on screen, the other two edges will either be drawn
     // from the other cell, or be off screen so we don't care
-
     var region = L.geodesicPolyline([corners[0], corners[1], corners[2]],
     {
       fill: false,
       color: color,
       opacity: 0.5,
-      weight: weight,
+      weight: 5,
       clickable: false
     });
 

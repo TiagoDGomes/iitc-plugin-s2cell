@@ -1,9 +1,9 @@
 // ==UserScript==
 // @id             iitc-plugin-s2cell
-// @name           IITC plugin: Show S2 Cells
+// @name           IITC plugin: Show Configurable S2 Cells
 // @author         vib
 // @category       Layer
-// @version        0.2.0
+// @version        0.3.0
 // @namespace      https://github.com/TiagoDGomes/iitc-plugin-s2cell
 // @updateURL      https://github.com/TiagoDGomes/iitc-plugin-s2cell/raw/master/iitc-plugin-s2cell.meta.js
 // @downloadURL    https://github.com/TiagoDGomes/iitc-plugin-s2cell/raw/master/iitc-plugin-s2cell.user.js
