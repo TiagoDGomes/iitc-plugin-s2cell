@@ -3,7 +3,7 @@
 // @name           IITC plugin: Show Configurable S2 Cells
 // @author         vib
 // @category       Layer
-// @version        0.3.0
+// @version        0.3.1
 // @namespace      https://github.com/TiagoDGomes/iitc-plugin-s2cell
 // @updateURL      https://github.com/TiagoDGomes/iitc-plugin-s2cell/raw/master/iitc-plugin-s2cell.meta.js
 // @downloadURL    https://github.com/TiagoDGomes/iitc-plugin-s2cell/raw/master/iitc-plugin-s2cell.user.js
@@ -31,7 +31,7 @@ function wrapper(plugin_info)
   //PLUGIN AUTHORS: writing a plugin outside of the IITC build environment? if so, delete these lines!!
   //(leaving them in place might break the 'About IITC' page or break update checks)
   plugin_info.buildName = 's2-cells';
-  plugin_info.dateTimeVersion = '20180504.121800';
+  plugin_info.dateTimeVersion = '20181113.023500';
   plugin_info.pluginId = 's2-cells';
   //END PLUGIN AUTHORS NOTE
 
@@ -730,9 +730,14 @@ function wrapper(plugin_info)
 
           // and recurse to our neighbors
           var neighbors = cell.getNeighbors();
-          for (var i = 0; i < neighbors.length; i++)
-          {
-            drawCellAndNeighbors(neighbors[i]);
+          try {
+              for (var i = 0; i < neighbors.length; i++)
+              {
+                  drawCellAndNeighbors(neighbors[i], color);
+              }
+          } catch(e) {
+              console.error(e);
+              return;
           }
         }
       }
